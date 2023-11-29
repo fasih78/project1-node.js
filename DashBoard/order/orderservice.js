@@ -119,7 +119,7 @@ const CreateOrder = async (req, res) => {
         );
 
         return res.status(200).send({
-          message: "Order was successfully placed, and payment was also done!",
+          message: "Order was successfully placed and payment was also done!",
         });
       } else {
         const order = await OrderModel.create({
@@ -154,4 +154,39 @@ const OrderDeleteAll = async (req, res) => {
   }
 };
 
-module.exports = { CreateOrder, OrderDeleteAll };
+
+const Payment_get_stripe = async(req,res)=>{
+
+  const paymentIntentId = req.params.id;
+  console.log(paymentIntentId);
+  
+  try {
+    const getOne = await stripe.paymentIntents.retrieve(paymentIntentId);
+    return res.status(200).send({ getOne });
+  } catch (err) {
+    return res.status(500).send({ error: err.message });
+  }
+}
+
+const Payment_Refund_stripe =async (req,res)=>{
+  const chargeId = req.params.id;
+  console.log(chargeId);
+  
+  try {
+    const refundPolicy = await stripe.refunds.create({
+      charge: chargeId,
+    });
+  
+    return res.status(200).send({ refundPolicy });
+  } catch (err) {
+    return res.status(500).send({ error: err.message });
+  }
+  
+}
+
+
+
+
+
+
+module.exports = { CreateOrder, OrderDeleteAll,Payment_get_stripe,Payment_Refund_stripe };
