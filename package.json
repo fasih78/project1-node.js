@@ -1,0 +1,39 @@
+{
+  "name": "fms-node",
+  "version": "1.0.0",
+  "description": "faseh project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "faseh",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dot": "^1.1.3",
+    "dotenv": "^16.3.1",
+    "email-validator": "^2.0.4",
+    "env": "^0.0.2",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "isodate": "^0.1.4",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.29.4",
+    "mongoose": "^7.6.6",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "routes": "^2.1.0",
+    "stripe": "^14.5.0",
+    "twilio": "^4.19.0",
+    "utc": "^0.1.0",
+    "validator": "^13.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "project1-node.js"
+  }
+}
