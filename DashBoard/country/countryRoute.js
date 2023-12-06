@@ -1,5 +1,5 @@
 const routes = require("express").Router();
-const verifyUserToken = require("../Authorized");
+const verifyUserToken = require("../../middleware/Authorized");
 const {
   createcountry,
   CountryUpdatebyIdHandler,

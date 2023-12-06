@@ -1,6 +1,6 @@
 const routes = require("express").Router();
 const { create } = require("../user.js/usermodel");
-const verifyUserToken = require("../Authorized");
+const verifyUserToken = require("../../middleware/Authorized");
 //const { CustomerDeleteALL } = require("../customers/customerservice");
 const {
   createCity,

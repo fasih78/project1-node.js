@@ -9,7 +9,7 @@ const {
   CustomerDeleteALL,
   updateCustomerByIdHandler,
 } = require("./customerservice");
-const verifyUserToken = require("../Authorized");
+const verifyUserToken = require('../../middleware/Authorized')
 // const { CustomerDeleteALL } = require("./customerservice.js");
 // const { Customerfindall } = require("./customerservice");
 //const CustomerfindOne = require ("./customerservice.js")

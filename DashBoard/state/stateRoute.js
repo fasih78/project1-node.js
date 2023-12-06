@@ -7,7 +7,7 @@ const {
   StateFindAll,
   StateFindOne,
 } = require("./stateservice.js");
-const verifyUserToken = require("../Authorized");
+const verifyUserToken = require("../../middleware/Authorized");
 const { response, json } = require("express");
 
 routes.post("/state", verifyUserToken, async (req, res) => {

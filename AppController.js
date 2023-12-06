@@ -3,12 +3,17 @@ const app = express();
 const cors = require("cors");
 const morgan = require("morgan");
 const bodyParser = require('body-parser');
+const rateLimitMiddleware = require('./middleware/Request_limit')
 
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
+ app.use(rateLimitMiddleware)
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
 
 const userRoute = require("./DashBoard/user.js/userRoute");
 

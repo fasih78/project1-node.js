@@ -1,9 +1,9 @@
 const routes = require("express").Router();
 const { response } = require("express");
 const { SignUp, login, OtpVerify } = require("./userservice");
-const verifyUserToken = require("../Authorized");
+const verifyUserToken = require("../../middleware/Authorized");
 
-routes.post("/signup",  async (req, res) => {
+routes.post("/signup", async (req, res) => {
   await SignUp(req, res);
 });
 routes.post("/login", async (req, res) => {

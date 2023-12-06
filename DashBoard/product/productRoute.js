@@ -1,5 +1,5 @@
 const{CreateProduct,ProductFindOne,ProductDeleteOne,ProductDeleteAll,ProductUpdatebyIdHandler, ProductFindAll}=require('./productservice')
-const verifyUserToken = require('../Authorized')
+const verifyUserToken = require("../../middleware/Authorized");
 const routes = require("express").Router();
 
 
