@@ -126,14 +126,14 @@ const SignUp = async (req, res) => {
       //       body: `hELLOW`
       //     });
 
-      const message = await client.messages.create({
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: phonenumber,
-        body: "hellow",
-      });
+      // const message = await client.messages.create({
+      //   from: process.env.TWILIO_PHONE_NUMBER,
+      //   to: phonenumber,
+      //   body: "hellow",
+      // });
 
       const token = jwt.sign({ email: email }, process.env.JWT_SECRET_KEY, {
-        expiresIn: "365d",
+        expiresIn: "5m",
       });
 
       const newUser = await UserModel.create({
@@ -143,16 +143,17 @@ const SignUp = async (req, res) => {
         phonenumber,
         password: hash,
       });
+      console.log(token , "token");
       await newUser.save();
       return res.status(201).json({
         success: true,
         message: "SignUp Successfully! OTP sent successfully!",
-        data: newUser,
-        token: token,
-        TwilioAPIResponse: message,
+        // data: newUser,
+         token: token,
+        // TwilioAPIResponse: message,
       });
     } catch (twilioError) {
-      return res.status(401).send({ message: twilioError });
+      //return res.status(401).send({ message: twilioError });
     }
   } catch (err) {
     console.error("Error in SignUp:", err);
@@ -195,6 +196,7 @@ const login = async (req, res) => {
         const findpassword = await UserModel.findOne({
           password: passwordcompared,
         }).exec();
+        email_sending();
 
         var transporter = nodemailer.createTransport({
           service: "outlook",
@@ -203,21 +205,29 @@ const login = async (req, res) => {
             pass: process.env.ADMIN_EMAIL_PASSWORD,
           },
         });
-        const info1 = await transporter.sendMail({
-          from: "career@fascom.com", // sender address
-          to: "career@fascom.com", // list of receivers
-          subject: `Hello !  ${email}`, // Subject line
-          text: `Welcome to Fascom Limited
-          Thank you for interest in empolyment at Fascom Limited. if your qualifiaction
-          match our needs , we will contact you to learn more about your fit in this position
-          
-          Thanks again for your inquiry!
-          
-          - Fascom Limited
-          ,
-          `,
+        const token = jwt.sign({ email: email }, process.env.JWT_SECRET_KEY, {
+          expiresIn: "300d",
         });
-        res.status(200).send({ message: "login!" });
+        function email_sending() {
+        setTimeout(function () {
+          const info1 =  transporter.sendMail({
+            from: "career@fascom.com", // sender address
+            to: "career@fascom.com", // list of receivers
+            subject: `Hello !  ${email}`, // Subject line
+            text: `Welcome to Fascom Limited
+            Thank you for interest in empolyment at Fascom Limited. if your qualifiaction
+            match our needs , we will contact you to learn more about your fit in this position
+            
+            Thanks again for your inquiry!
+            
+            - Fascom Limited
+            ,
+            `,
+          });
+      
+        }, 10000); 
+      }
+        res.status(200).send({ message: "login!", token:token , });
       } else {
         res.status(400).send({ message: "Wrong Password!" });
       }

@@ -12,7 +12,6 @@ const {
 } = require("./cityservice");
 
 routes.post("/city", verifyUserToken, async (req, res) => {
-  console.log("res", res);
   await createCity(req, res);
 });
 
