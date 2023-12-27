@@ -2,18 +2,31 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const morgan = require("morgan");
-const bodyParser = require('body-parser');
-const rateLimitMiddleware = require('./middleware/Request_limit')
+const passport = require("passport");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const rateLimitMiddleware = require("./middleware/Request_limit");
+const googleroutes = require("./google_Authentication/google");
+
+require("dotenv").config();
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true,
+    secret: "FMS-1",
+  })
+);
+app.set("view engine", "ejs");
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
- app.use(rateLimitMiddleware)
+app.use(rateLimitMiddleware);
 app.use(bodyParser.urlencoded({ extended: true }));
-
-
-
 
 const userRoute = require("./DashBoard/user.js/userRoute");
 
@@ -43,8 +56,7 @@ const invoiceRoute = require("./DashBoard/invoice/invoiceRoute");
 
 const productRoute = require("./DashBoard/product/productRoute.js");
 
-
-const orderRoute = require ("./DashBoard/order/orderRoute.js")
+const orderRoute = require("./DashBoard/order/orderRoute.js");
 
 ////////////////////// User  Registration Address! /////////////
 
@@ -104,8 +116,9 @@ app.use("/", productRoute);
 
 //////////////////// Order Route  /////////////////////////////
 
+app.use("/", orderRoute);
+///////////////////////  google auth Route /////////////////////
 
-app.use("/", orderRoute) 
-
+app.use("/", googleroutes);
 
 module.exports = app;

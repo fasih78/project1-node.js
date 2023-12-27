@@ -1,21 +1,31 @@
 const routes= require ('express').Router();
 
-const {file1, readFile1}=require ('./fileservice.js')
+const Routes = require('twilio/lib/rest/Routes.js');
+const {CreateFileHandler,ReadFile, Copyfile, grid}=require ('./fileservice.js')
 
 
 
 
-routes.post('/uploadfile' , async(req,res)=>{
+routes.post('/file/:id' , async(req,res)=>{
 
-const filesaved  = await file1(req,res);
+const filesaved  = await CreateFileHandler(req,res);
 
 
 })
-routes.post('/readfile' , async(req,res)=>{
-
-    const filesaved  = await readFile1(req,res);
+routes.get('/readfile' , async(req,res)=>{
+    const filesaved  = await ReadFile(req,res);
     
     
     })
+    routes.post('/copyfile' , async(req,res)=>{
+        const filesaved  = await Copyfile(req,res);
+        
+        
+        })
+        routes.post('/grid' , async(req,res)=>{
+            const filesaved  = await grid(req,res);
+            
+            
+            })
 
 module.exports=routes;
