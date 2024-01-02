@@ -6,7 +6,8 @@ const passport = require("passport");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const rateLimitMiddleware = require("./middleware/Request_limit");
-const googleroutes = require("./google_Authentication/google");
+const googleroutes = require("./google_Authentication/Routes.js");
+const facebookroutes = require("./Facebook_Authenticate/Routes")
 
 require("dotenv").config();
 app.use(
@@ -119,6 +120,7 @@ app.use("/", productRoute);
 app.use("/", orderRoute);
 ///////////////////////  google auth Route /////////////////////
 
-app.use("/", googleroutes);
+  app.use("/", googleroutes);
+ app.use("/" , facebookroutes)
 
 module.exports = app;

@@ -1,7 +1,7 @@
 const passport = require("passport");
 
-const Auth_google = passport.authenticate("google", {
-  scope: ["email", "profile"],
+const Auth_facebook = passport.authenticate("facebook", {
+  scope: ["public_profile", "email"],
 });
 
 const after_auth = (req, res) => {
@@ -20,9 +20,9 @@ const after_auth = (req, res) => {
   res.send(htmlContent);
 };
 
-const Callback = passport.authenticate("google", {
-  successRedirect: "/protected",
-  failureRedirect: "/auth/failure",
+const Callback = passport.authenticate("facebook", {
+  successRedirect: "/protected/facebook",
+  failureRedirect: "/auth/failure/facebook",
 });
 
 const auth_fail = (req, res) => {
@@ -30,7 +30,7 @@ const auth_fail = (req, res) => {
 };
 
 module.exports = {
-  Auth_google,
+  Auth_facebook,
   after_auth,
   Callback,
   auth_fail,
