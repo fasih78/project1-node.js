@@ -2,12 +2,18 @@ const express = require("express");
 const UserModel = require("./usermodel.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const mongoose = require('mongoose')
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const twilio = require("twilio");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const moment = require('moment-timezone');
+const LogInfoModel = require("./log_info_model.js");
 require("dotenv").config();
+const readline = require('readline');
+const fs = require("fs");
+const { log } = require("console");
 
 // const SignUp = async (req, res) => {
 //   try {
@@ -143,13 +149,13 @@ const SignUp = async (req, res) => {
         phonenumber,
         password: hash,
       });
-      console.log(token , "token");
+      console.log(token, "token");
       await newUser.save();
       return res.status(201).json({
         success: true,
         message: "SignUp Successfully! OTP sent successfully!",
         // data: newUser,
-         token: token,
+        token: token,
         // TwilioAPIResponse: message,
       });
     } catch (twilioError) {
@@ -196,6 +202,14 @@ const login = async (req, res) => {
         const findpassword = await UserModel.findOne({
           password: passwordcompared,
         }).exec();
+
+        const loginfo = await LogInfoModel.create({
+          Time_In:moment().tz('Asia/Karachi').format('HH:mm:ss'),
+          user_id: findemail._id,
+          user_name: findemail.name,
+          email: email,
+        });
+        await loginfo.save();
         email_sending();
 
         var transporter = nodemailer.createTransport({
@@ -206,15 +220,15 @@ const login = async (req, res) => {
           },
         });
         const token = jwt.sign({ email: email }, process.env.JWT_SECRET_KEY, {
-          expiresIn: "300d",
+          expiresIn: "20m",
         });
         function email_sending() {
-        setTimeout(function () {
-          const info1 =  transporter.sendMail({
-            from: "career@fascom.com", // sender address
-            to: "career@fascom.com", // list of receivers
-            subject: `Hello !  ${email}`, // Subject line
-            text: `Welcome to Fascom Limited
+          setTimeout(function () {
+            const info1 = transporter.sendMail({
+              from: "career@fascom.com", // sender address
+              to: "career@fascom.com", // list of receivers
+              subject: `Hello !  ${email}`, // Subject line
+              text: `Welcome to Fascom Limited
             Thank you for interest in empolyment at Fascom Limited. if your qualifiaction
             match our needs , we will contact you to learn more about your fit in this position
             
@@ -223,11 +237,10 @@ const login = async (req, res) => {
             - Fascom Limited
             ,
             `,
-          });
-      
-        }, 10000); 
-      }
-        res.status(200).send({ message: "login!", token:token , });
+            });
+          }, 10000);
+        }
+        res.status(200).send({ message: "login!", token: token });
       } else {
         res.status(400).send({ message: "Wrong Password!" });
       }
@@ -239,4 +252,53 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { SignUp, login, OtpVerify };
+const Logout = async (req, res) => {
+  try {
+    const user_id = req.params.id;
+  
+    const update_session = await LogInfoModel.updateOne(
+      { user_id: new mongoose.Types.ObjectId(user_id)},
+      {
+        logout: true,
+        logout_date: moment.tz(new Date(), 'Asia/Karachi'),
+        Time_out:moment().tz('Asia/Karachi').format('HH:mm:ss')
+      }
+    );
+
+
+
+    return res.status(200).send({ message: "Logout successful" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+};
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: true, 
+});
+const terminal_histroy = async(req,res)=>{
+
+  try {
+    rl.on('line',async (input) => {
+   
+      const history = rl.history;
+      console.log('Terminal history:', history);
+      console.log('You entered:', input);
+      const lgo= LogInfoModel.create({
+        history:history
+      })
+      await lgo.save()
+  res.send(history)
+    });
+    rl.prompt();
+
+  } catch (error) {
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+}
+
+
+
+module.exports = { SignUp, login, OtpVerify, Logout, terminal_histroy };

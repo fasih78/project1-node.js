@@ -1,6 +1,11 @@
 const express = require("express");
 const CountryModel = require("./countrymodel");
 
+
+const logRequestDetails = require('../user.js/user_log_func')
+
+
+
 const createcountry = async (req, res) => {
   let { name } = req.body;
 
@@ -8,13 +13,20 @@ const createcountry = async (req, res) => {
     const LastUser = await CountryModel.findOne().sort({ _id: -1 }).exec();
     const id = LastUser ? LastUser.id + 1 : 1;
     const create = await CountryModel.create({
-      id,
+      id    ,
       name,
     });
     await create.save();
+    /////////////////////log////////////////////
+  await logRequestDetails(req,res, true)
+    /////////////////////log////////////////////
+
     res.status(200).send({ message: "Country has been Created!" });
     return;
   } catch (err) {
+      /////////////////////log////////////////////
+  await logRequestDetails(req,res, false)
+  /////////////////////log////////////////////
     res.status(500).send({ error: err.message });
   }
 };

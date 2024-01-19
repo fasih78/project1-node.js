@@ -119,6 +119,14 @@ const Copyfile = async (req, res) => {
         }
       });
 
+      readStream.on('data', (chunk) => {
+        console.log(`Received ${chunk.length} bytes of data: ${chunk.toString()}`);
+      });
+      
+      // Handle 'end' event when the stream ends
+      readStream.on('end', () => {
+        console.log('Finished reading data.');
+      });
       writeStream.on('error', (err) => {
         if (callback) {
           callback(err);

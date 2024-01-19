@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const LogInfoModel = require ('../DashBoard/user.js/log_info_model')
 // const express = require("express");
 
 const users = [];
@@ -15,7 +16,9 @@ const verifyUserToken = (req, res, next) => {
     req.user = decoded.user;
     next();
   } catch (err) {
-    res.status(400).send("Invalid token.");
+
+
+    res.status(400).send("Invalid token  and User logout!.");
   }
 };
 

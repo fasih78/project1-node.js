@@ -26,5 +26,9 @@ routes.get("/auth/failure", async (req, res) => {
 routes.get("/google/callback", async (req, res) => {
   await Callback(req, res);
 });
+routes.get('/logout', function(req, res) {
+    res.redirect('https://accounts.google.com/logout');
+    res.redirect('http://localhost:3000/google/callback'); 
+  });
 
 module.exports = routes;
