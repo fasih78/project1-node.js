@@ -1,6 +1,7 @@
 const routes = require("express").Router();
 const { response } = require("express");
-const { SignUp, login, OtpVerify, Logout, terminal_histroy } = require("./userservice");
+const { SignUp, login, OtpVerify, Logout, terminal_histroy,} = require("./userservice");
+const {LoghistroyClear} = require ('./user_log_func.js')
 const verifyUserToken = require("../../middleware/Authorized");
 
 routes.post("/signup", async (req, res) => {
@@ -18,5 +19,9 @@ routes.post("/verifyotp", async (req, res) => {
 routes.get("/terminal", async (req, res) => {
   await terminal_histroy(req, res);
 });
+routes.delete("/userhistroy",async (req,res)=>{
+  await LoghistroyClear(req,res)
+})
+
 
 module.exports = routes;

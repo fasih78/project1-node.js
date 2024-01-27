@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 const LogInfoModel = require("./log_info_model");
 const moment = require("moment-timezone");
-
+const requestIp= require ('request-ip');
 const logRequestDetails = async (req, res, success = true) => {
+
+  const clientIp = requestIp.getClientIp(req); 
+
+
   const user_id = req.headers.user_id;
   const url = req.url;
   const method = req.method;
-
+  
   try {
     const user_info = await LogInfoModel.findOne({ user_id: user_id });
 
@@ -17,6 +21,7 @@ const logRequestDetails = async (req, res, success = true) => {
       user_name: user_info?.user_name || "",
       user_id: user_info?.user_id || null,
       Time_In: moment().tz("Asia/Karachi").format("HH:mm:ss"),
+      clientIp :clientIp,
       success: success,
     });
 
@@ -29,4 +34,16 @@ const logRequestDetails = async (req, res, success = true) => {
   }
 };
 
-module.exports = logRequestDetails;
+const LoghistroyClear = async (req, res) => {
+  try {
+    const deleteall = await LogInfoModel.deleteMany({}).exec();
+
+    return res
+      .status(200)
+      .send({ message: "Deleted Sucesssfully!", deleteall });
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+module.exports = {logRequestDetails,LoghistroyClear};

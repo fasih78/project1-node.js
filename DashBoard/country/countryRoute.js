@@ -1,5 +1,6 @@
 const routes = require("express").Router();
 const verifyUserToken = require("../../middleware/Authorized");
+const ipMiddleware = require('../../middleware/Ip_Address.js')
 const {
   createcountry,
   CountryUpdatebyIdHandler,
@@ -9,7 +10,7 @@ const {
   CountryFindOne,
 } = require("./countryservice.js");
 
-routes.post("/country", verifyUserToken, async (req, res) => {
+routes.post("/country", verifyUserToken,ipMiddleware, async (req, res) => {
   await createcountry(req, res);
 });
 

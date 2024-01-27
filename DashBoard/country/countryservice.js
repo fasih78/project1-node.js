@@ -2,11 +2,11 @@ const express = require("express");
 const CountryModel = require("./countrymodel");
 
 
-const logRequestDetails = require('../user.js/user_log_func')
+const {logRequestDetails} = require('../user.js/user_log_func')
 
 
 
-const createcountry = async (req, res) => {
+const createcountry = async (req, res,)  => {
   let { name } = req.body;
 
   try {

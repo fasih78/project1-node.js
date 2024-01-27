@@ -14,6 +14,7 @@ history:{type:String},
 api_method:{type:String},
 logout_date:{type:Date},
 Time_out:{type:String},
+clientIp:{type:String},
 success:{type:Boolean}
 })
 

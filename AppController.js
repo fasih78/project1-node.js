@@ -7,7 +7,8 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const rateLimitMiddleware = require("./middleware/Request_limit");
 const googleroutes = require("./google_Authentication/Routes.js");
-const facebookroutes = require("./Facebook_Authenticate/Routes")
+const facebookroutes = require("./Facebook_Authenticate/Routes");
+const requestIp = require('request-ip');
 
 require("dotenv").config();
 app.use(
@@ -20,6 +21,9 @@ app.use(
 app.set("view engine", "ejs");
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(requestIp.mw());
+
+
 
 
 app.use(express.json());
