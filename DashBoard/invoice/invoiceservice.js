@@ -40,7 +40,8 @@ const InvoiceCreate = async (req, res) => {
     } else {
       res
         .status(404)
-        .send({ message: "invoice of this contract already exists!" });
+        .send
+        ({ message: "invoice of this contract already exists!" });
       return;
     }
   } catch (err) {
