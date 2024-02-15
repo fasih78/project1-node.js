@@ -10,13 +10,12 @@ const ContractDtlCreate = async (req, res) => {
     const LastUser = await ContractDtlModel.findOne().sort({ _id: -1 }).exec();
     const id = LastUser ? LastUser.id + 1 : 1;
 
-    console.log(contract);
     if (id && qty && rate && exchangerate && contract) {
       const exists1 = await ContractDtlModel.findOne({
         contract,
         isDeleted: false,
       });
-      
+
       if (exists1 == null) {
         const contractdtltrue = await ContractModel.findByIdAndUpdate(
           contract,
