@@ -22,6 +22,7 @@ routes.delete("/invoice/deleteall", async (req, res) => {
   await InvoiceDeleteAll(res);
 });
 routes.get("/invoice/findone/:id", async (req, res) => {
+  
   await InvoicFindOne(req, res);
 });
 // routes.post("/invoice/findall", async (req, res) => {
