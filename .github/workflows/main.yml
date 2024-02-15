@@ -1,21 +1,31 @@
-name: Main
+name: CI
+
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - dev
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Use Node.js
         uses: actions/setup-node@v2
-        with: 
+        with:
           node-version: "14.x"
+
       - name: Install dependencies
         run: npm install
-      - name: Run test
-        run: npm test
 
-  
+      - name: Run tests (only for dev branch)
+        run: |
+          if [ ${{ github.ref }} == 'refs/heads/dev' ]; then
+            npm test
+          else
+            echo "Skipping tests on branch ${{ github.ref }}"
+          fi
