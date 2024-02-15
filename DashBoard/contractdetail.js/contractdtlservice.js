@@ -16,7 +16,7 @@ const ContractDtlCreate = async (req, res) => {
         contract,
         isDeleted: false,
       });
-      console.log(exists1, "ff");
+      
       if (exists1 == null) {
         const contractdtltrue = await ContractModel.findByIdAndUpdate(
           contract,
