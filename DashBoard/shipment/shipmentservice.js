@@ -206,7 +206,7 @@ const ShipmentFindAll = async (req, res) => {
       return;
     }
   } catch (err) {
-    console.log(err);
+    
     res.status(500).send({ erorr: err.message, sucess: false });
   }
 };
