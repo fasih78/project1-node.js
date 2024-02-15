@@ -3,21 +3,21 @@ const app = express();
 const cors = require("cors");
 const morgan = require("morgan");
 const passport = require("passport");
-const session = require("express-session");
+ const session = require("express-session");
 const bodyParser = require("body-parser");
 const rateLimitMiddleware = require("./middleware/Request_limit");
 const googleroutes = require("./google_Authentication/Routes.js");
 const facebookroutes = require("./Facebook_Authenticate/Routes");
 const requestIp = require('request-ip');
 
+
 require("dotenv").config();
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: true,
-    secret: "FMS-1",
-  })
-);
+app.use(session({
+  secret: 'FMS-1', 
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false },
+}));
 app.set("view engine", "ejs");
 app.use(passport.initialize());
 app.use(passport.session());
@@ -32,8 +32,6 @@ app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 app.use(rateLimitMiddleware);
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const userRoute = require("./DashBoard/user.js/userRoute");
 
 const customerRoute = require("./DashBoard/customers/customerRoute");
 
@@ -62,6 +60,10 @@ const invoiceRoute = require("./DashBoard/invoice/invoiceRoute");
 const productRoute = require("./DashBoard/product/productRoute.js");
 
 const orderRoute = require("./DashBoard/order/orderRoute.js");
+
+const product_cart = require("./DashBoard/shoppingCart/product_cartRoutes.js")
+
+const userRoute = require("./DashBoard/user.js/userRoute");
 
 ////////////////////// User  Registration Address! /////////////
 
@@ -126,5 +128,6 @@ app.use("/", orderRoute);
 
   app.use("/", googleroutes);
  app.use("/" , facebookroutes)
+ app.use("/",  product_cart)
 
 module.exports = app;

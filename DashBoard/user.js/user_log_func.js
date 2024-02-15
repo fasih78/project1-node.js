@@ -2,6 +2,14 @@ const mongoose = require("mongoose");
 const LogInfoModel = require("./log_info_model");
 const moment = require("moment-timezone");
 const requestIp= require ('request-ip');
+const fs = require("fs");
+
+
+
+
+
+
+
 const logRequestDetails = async (req, res, success = true) => {
 
   const clientIp = requestIp.getClientIp(req); 
@@ -24,9 +32,15 @@ const logRequestDetails = async (req, res, success = true) => {
       clientIp :clientIp,
       success: success,
     });
-
-    // Save the log entry
     const savedLogEntry = await newLogEntry.save();
+    const file = fs.appendFile('test.txt', JSON.stringify(newLogEntry, null, 2), (err) => {
+
+      if (err) {
+        console.error('Error appending to file:', err);
+      } else {
+        console.log('Data appended to file successfully.');
+      }
+    });
 
     console.log("Log entry saved successfully:", savedLogEntry);
   } catch (error) {

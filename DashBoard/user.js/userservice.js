@@ -2,16 +2,16 @@ const express = require("express");
 const UserModel = require("./usermodel.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const twilio = require("twilio");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const moment = require('moment-timezone');
+const moment = require("moment-timezone");
 const LogInfoModel = require("./log_info_model.js");
 require("dotenv").config();
-const readline = require('readline');
+const readline = require("readline");
 const fs = require("fs");
 const { log } = require("console");
 
@@ -193,8 +193,10 @@ const login = async (req, res) => {
   let response;
   try {
     const { email, password } = req.body;
-    const findemail = await UserModel.findOne({ email: email }).exec();
+    // req.session.key = email;
+    req.session.userEmail = email;
 
+    const findemail = await UserModel.findOne({ email: email }).exec();
     if (findemail) {
       const hash = findemail.password;
       const passwordcompared = await bcrypt.compare(password, hash);
@@ -204,7 +206,7 @@ const login = async (req, res) => {
         }).exec();
 
         const loginfo = await LogInfoModel.create({
-          Time_In:moment().tz('Asia/Karachi').format('HH:mm:ss'),
+          Time_In: moment().tz("Asia/Karachi").format("HH:mm:ss"),
           user_id: findemail._id,
           user_name: findemail.name,
           email: email,
@@ -220,7 +222,7 @@ const login = async (req, res) => {
           },
         });
         const token = jwt.sign({ email: email }, process.env.JWT_SECRET_KEY, {
-          expiresIn: "20m",
+          expiresIn: "50m",
         });
         function email_sending() {
           setTimeout(function () {
@@ -255,17 +257,15 @@ const login = async (req, res) => {
 const Logout = async (req, res) => {
   try {
     const user_id = req.params.id;
-  
+
     const update_session = await LogInfoModel.updateOne(
-      { user_id: new mongoose.Types.ObjectId(user_id)},
+      { user_id: new mongoose.Types.ObjectId(user_id) },
       {
         logout: true,
-        logout_date: moment.tz(new Date(), 'Asia/Karachi'),
-        Time_out:moment().tz('Asia/Karachi').format('HH:mm:ss')
+        logout_date: moment.tz(new Date(), "Asia/Karachi"),
+        Time_out: moment().tz("Asia/Karachi").format("HH:mm:ss"),
       }
     );
-
-
 
     return res.status(200).send({ message: "Logout successful" });
   } catch (err) {
@@ -276,29 +276,74 @@ const Logout = async (req, res) => {
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  terminal: true, 
+  terminal: true,
 });
-const terminal_histroy = async(req,res)=>{
-
+const terminal_histroy = async (req, res) => {
   try {
-    rl.on('line',async (input) => {
-   
+    rl.on("line", async (input) => {
       const history = rl.history;
-      console.log('Terminal history:', history);
-      console.log('You entered:', input);
-      const lgo= LogInfoModel.create({
-        history:history
-      })
-      await lgo.save()
-  res.send(history)
+      console.log("Terminal history:", history);
+      console.log("You entered:", input);
+      const lgo = LogInfoModel.create({
+        history: history,
+      });
+      await lgo.save();
+      res.send(history);
     });
     rl.prompt();
-
   } catch (error) {
     res.status(500).send({ error: "Internal Server Error" });
   }
-}
+};
 
+const Reset_password = async (req, res) => {
+  try {
+    const { password, newpassword } = req.body;
 
+    const userEmail = req.session.userEmail;
 
-module.exports = { SignUp, login, OtpVerify, Logout, terminal_histroy };
+    const userExists = await UserModel.findOne({ email: userEmail });
+
+    if (!userExists) {
+      return res.status(404).send({ message: "User not Exists!" });
+    }
+
+    const hash = userExists.password;
+    const passwordcompared = await bcrypt.compare(password, hash);
+
+    if (passwordcompared === false) {
+      return res.status(400).send("Incorrect password!");
+    }
+
+    const validation = validator.isEmail(userEmail);
+
+    if (!validation) {
+      return res.status(400).send({ message: "Invalid Email!" });
+    }
+
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash2 = bcrypt.hashSync(newpassword, salt);
+    const updatepassword = await UserModel.updateMany(
+      {
+        email: userEmail,
+      },
+      {
+        password: hash2,
+        salt: salt,
+      }
+    );
+
+    return res.status(201).send("Your Password Reset Successfully!");
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+module.exports = {
+  SignUp,
+  login,
+  OtpVerify,
+  Logout,
+  terminal_histroy,
+  Reset_password,
+};
