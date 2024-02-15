@@ -76,7 +76,7 @@ const ShipmentUpdateById = async (req, res) => {
       contract,
       payment,
     });
-    console.log(updateshipment);
+
     if (updateshipment) {
       res.status(201).send({
         message: "Shipment Update Sucessfully!",
