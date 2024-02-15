@@ -24,7 +24,7 @@ routes.delete("/invoice/deleteall", async (req, res) => {
 routes.get("/invoice/findone/:id", async (req, res) => {
   await InvoicFindOne(req, res);
 });
-routes.post("/invoice/findall", async (req, res) => {
-  await InvoiceFindAll(req,res);
-});
+// routes.post("/invoice/findall", async (req, res) => {
+//   await InvoiceFindAll(req,res);
+// });
 module.exports = routes;
