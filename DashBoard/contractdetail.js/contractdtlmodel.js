@@ -10,6 +10,7 @@ const ContractDtlCore = new mongoose.Schema({
   contract: { type: mongoose.Schema.Types.ObjectId, ref: ContractModel },
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now() },
+  
   updatedAt: { type: Date, default: Date.now() },
 });
 
