@@ -335,7 +335,6 @@ const Reset_password = async (req, res) => {
 
     return res.status(201).send("Your Password Reset Successfully!");
   } catch (error) {
-    
     return res.status(500).send(error);
   }
 };
