@@ -11,16 +11,19 @@ const {
 } = require("./userservice");
 const { LoghistroyClear } = require("./user_log_func.js");
 const verifyUserToken = require("../../middleware/Authorized");
+const validatePasswordLength= require('../../middleware/validate_password_length')
 
 
-routes.use(session({
-  secret: 'FMS-1',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true },
-}));
 
-routes.post("/signup", async (req, res) => {
+
+// routes.use(session({
+//   secret: 'FMS-1',
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { secure: true },
+// }));
+
+routes.post("/signup",validatePasswordLength, async (req, res) => {
   await SignUp(req, res);
 });
 routes.post("/login", async (req, res) => {

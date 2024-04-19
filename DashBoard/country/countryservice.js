@@ -13,21 +13,17 @@ const createcountry = async (req, res,)  => {
     const LastUser = await CountryModel.findOne().sort({ _id: -1 }).exec();
     const id = LastUser ? LastUser.id + 1 : 1;
     const create = await CountryModel.create({
-      id    ,
+      id,
       name,
     });
     await create.save();
-    /////////////////////log////////////////////
-  await logRequestDetails(req,res, true)
-    /////////////////////log////////////////////
+ 
 
     res.status(200).send({ message: "Country has been Created!" });
     return;
   } catch (err) {
-      /////////////////////log////////////////////
-  await logRequestDetails(req,res, false)
-  /////////////////////log////////////////////
-    res.status(500).send({ error: err.message });
+    
+   return res.status(500).send({ error: err.message });
   }
 };
 
@@ -47,7 +43,7 @@ const CountryUpdatebyIdHandler = async (req, res) => {
       return;
     }
   } catch (err) {
-    res.status(500).send({ error: err.message });
+   return res.status(500).send({ error: err.message });
   }
 };
 
@@ -64,7 +60,7 @@ const CountryDeleteAll = async (res) => {
       return;
     }
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    return res.status(500).send({ error: err.message });
   }
 };
 
@@ -81,7 +77,7 @@ const CountryDeleteOne = async (req, res) => {
       return;
     }
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    return res.status(500).send({ error: err.message });
   }
 };
 
@@ -96,7 +92,7 @@ const CountryFindAll = async (res) => {
       return;
     }
   } catch (err) {
-    res.status(500).send({ error: err.message });
+   return res.status(500).send({ error: err.message });
   }
 };
 
@@ -113,7 +109,7 @@ const CountryFindOne = async (req, res) => {
       return;
     }
   } catch (err) {
-    res.status(500).send({ error: err.message });
+   return res.status(500).send({ error: err.message });
   }
 };
 

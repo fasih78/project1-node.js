@@ -21,8 +21,8 @@ const after_auth = (req, res) => {
 };
 
 const Callback = passport.authenticate("google", {
-  successRedirect: "/protected",
-  failureRedirect: "/auth/failure",
+    successRedirect: "/protected",
+    failureRedirect: "/auth/failure",
 });
 
 const auth_fail = (req, res) => {

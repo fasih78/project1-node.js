@@ -25,6 +25,7 @@
     "express-session": "^1.18.0",
     "fs": "^0.0.1-security",
     "isodate": "^0.1.4",
+    "joi": "^17.12.1",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.44",

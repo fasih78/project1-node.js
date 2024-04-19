@@ -20,7 +20,7 @@ process.on("unhandledRejection", (reason, promise) => {
 
 process.on("SIGINT", () => {
   console.log("Shutting down gracefully...");
-  server.close(() => {
+  app.close(() => {
     console.log("Server has closed.");
     process.exit(0);
   });

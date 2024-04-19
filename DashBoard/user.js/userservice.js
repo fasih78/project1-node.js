@@ -197,6 +197,10 @@ const login = async (req, res) => {
     req.session.userEmail = email;
 
     const findemail = await UserModel.findOne({ email: email }).exec();
+const user_id = findemail._id
+console.log(`Assign a id : ${user_id}`);
+     req.session.user_id =user_id
+console.log(`store object id : ${req.session.user_id}`)
     if (findemail) {
       const hash = findemail.password;
       const passwordcompared = await bcrypt.compare(password, hash);

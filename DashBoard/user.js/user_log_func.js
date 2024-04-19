@@ -4,7 +4,8 @@ const moment = require("moment-timezone");
 const requestIp= require ('request-ip');
 const fs = require("fs");
 
-
+const session = require ('express-session');
+const UserModel = require("./usermodel");
 
 
 
@@ -14,20 +15,22 @@ const logRequestDetails = async (req, res, success = true) => {
 
   const clientIp = requestIp.getClientIp(req); 
 
-
-  const user_id = req.headers.user_id;
+const user_Id = req.session.user_id
+console.log(`this  is user_id :${user_Id}`)
+  // const user_id = req.headers.user_Id;
   const url = req.url;
   const method = req.method;
   
   try {
-    const user_info = await LogInfoModel.findOne({ user_id: user_id });
+    const user_info = await UserModel.findOne({ _id:new mongoose.Types.ObjectId(user_Id) });
 
-    // Create a new log entry
+  if(user_info !==  null || user_info !==  undefined){
     const newLogEntry = new LogInfoModel({
       history: url,
       api_method: method,
-      user_name: user_info?.user_name || "",
-      user_id: user_info?.user_id || null,
+      user_name: user_info?.name || "",
+      // user_id: user_info?.user_id || null,
+      user_id: user_Id,
       Time_In: moment().tz("Asia/Karachi").format("HH:mm:ss"),
       clientIp :clientIp,
       success: success,
@@ -41,8 +44,10 @@ const logRequestDetails = async (req, res, success = true) => {
         console.log('Data appended to file successfully.');
       }
     });
+  }else{
+    console.log("user_id not reterived!")
+  }
 
-    console.log("Log entry saved successfully:", savedLogEntry);
   } catch (error) {
     console.error("Error saving log entry:", error);
   }
