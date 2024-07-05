@@ -7,7 +7,7 @@
     "start": "node server",
     "dev": "nodemon server",
     "type": "module",
-    "test": "node test"
+    "test": "npm test"
   },
   "author": "faseh",
   "license": "ISC",
