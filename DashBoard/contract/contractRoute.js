@@ -13,6 +13,7 @@ routes.post("/contract", async (req, res) => {
 });
 routes.put("/contractupdate/:id", async (req, res) => {
   await ContractUpdateById(req, res);
+  
 });
 routes.post("/contractfindall", async (req, res) => {
   await ContractFindAll(res);
