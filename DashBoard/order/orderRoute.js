@@ -1,9 +1,9 @@
-const  {CreateOrder,OrderDeleteAll,Payment_get_stripe,Payment_Refund_stripe}  = require("./orderservice.js");
+const  {createOrder,OrderDeleteAll,Payment_get_stripe,Payment_Refund_stripe}  = require("./orderservice.js");
 const routes = require("express").Router();
 const verifyUserToken = require("../../middleware/Authorized");
 
 routes.post("/order/place", async (req, res) => {
-  await CreateOrder(req, res);
+  await createOrder(req, res);
 });
 
 

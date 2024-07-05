@@ -14,8 +14,14 @@ const moment = require("moment");
 
 
 
-const CreateOrder = async (req, res) => {
+const createOrder = async (req, res) => {
   try {
+    // Validate request data
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const {
       order_date,
       product_quantity,
@@ -26,122 +32,79 @@ const CreateOrder = async (req, res) => {
       currency,
     } = req.body;
 
-    const product_amount = await ProductModel.findOne({ _id: product });
-    const pamount = product_amount?.amount;
-    const amount = pamount * product_quantity;
-    const LastUser = await OrderModel.findOne().sort({ _id: -1 });
-    const id = LastUser ? LastUser.id + 1 : 1;
-
-
-
-    
-    
-    if (payment_method === "card") {
-      const customerid = await CustomerModel.findOne({ _id: customer });
-     
-  const state = await StateModel.findOne({_id:customerid?.state_id})
-  const city = await CityModel.findOne({_id:customerid?.city_id})
-  const country = await CountryModel.findOne({_id:customerid?.country_id})
-
-  ///create customer from stripe! 
-
-      const Customer = await stripe.customers.create({
-        description: "test",
-        name: customerid?.name,
-        email: customerid?.email,
-        phone_no: customerid?.phone_no,
-        address: {
-          line1: customerid?.address, 
-          line2: customerid?.address,
-          city: city?.name,
-          state: state?.name,
-          country: country.name,
-        },
-      });
-      // create payment intent from stripe!
-  
-      const paymentMethod = await stripe.paymentMethods.create({
-        type: "card",
-        card: {
-           token: "tok_visa",
-          //   number: '4242424242424242',
-          //   exp_month: 12,
-          //   exp_year: 2034,
-          //   cvc: '314',
-        },
-      });
-
-      const order = await OrderModel.create({
-        id: id,
-        order_date: moment(order_date).format("YYYY-MM-DD"),
-        product_quantity: product_quantity,
-        product: product,
-        customer: customer,
-        payment_method: payment_method,
-        card_no: card_no,
-        currency: currency,
-        total_Amount: amount,
-      });
-
-      const customerId = Customer.id;
-   
- // payment intent create with help of  customer payment method id!
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amount,
-        currency: currency,
-        payment_method: paymentMethod.id,
-        //  automatic_payment_methods: { enabled: true },
-        customer: customerId,
-        description: `Order_Id ${order._id}`,
-     
-      });
-    
-      // stripe another method of payment 
-
-      // const Payment_Complete = await stripe.charges.create({
-        //   amount: amount,
-        //   currency: currency,
-        //   description: `Order_Id ${order._id}`,
-        // source:'tok_visa'
-        // });
-        
-        if (paymentIntent) {
-          const paymentIntentConfirmation = await stripe.paymentIntents.confirm(
-            paymentIntent.id,
-            {return_url: 'https://google.com'}
-            
-            );
-            
-            console.log("Payment Intent Confirmation:", paymentIntentConfirmation);
-            const payment_status = await OrderModel.findByIdAndUpdate(
-          { _id: order._id },
-          { $set: { payment: true } }
-        );
-
-        return res.status(200).send({
-          message: "Order was successfully placed and payment was also done!",
-        });
-      } else {
-        const order = await OrderModel.create({
-          id: id,
-          order_date: moment(order_date).format("YYYY-MM-DD"),
-          product_quantity: product_quantity,
-          product: product,
-          customer: customer,
-          payment_method: payment_method,
-          card_no: card_no,
-          currency: currency,
-          total_Amount: amount,
-          payment: false,
-        });
-
-        return res
-          .status(200)
-          .send({ message: "Order was successfully placed!" });
-      }
+    // Fetch product details
+    const productInfo = await ProductModel.findOne({ _id: product });
+    if (!productInfo) {
+      return res.status(404).json({ error: 'Product not found' });
     }
+
+    // Calculate total amount
+    const totalAmount = productInfo.amount * product_quantity;
+
+    // Fetch customer details
+    const customerInfo = await CustomerModel.findOne({ _id: customer });
+    if (!customerInfo) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    // Fetch address details
+    const [state, city, country] = await Promise.all([
+      StateModel.findOne({ _id: customerInfo.state_id }),
+      CityModel.findOne({ _id: customerInfo.city_id }),
+      CountryModel.findOne({ _id: customerInfo.country_id }),
+    ]);
+
+    // Create customer in Stripe
+    const stripeCustomer = await stripe.customers.create({
+      description: "Customer for orders",
+      name: customerInfo.name,
+      email: customerInfo.email,
+      phone: customerInfo.phone_no,
+      address: {
+        line1: customerInfo.address,
+        city: city.name,
+        state: state.name,
+        country: country.name,
+      },
+    });
+
+    // Create payment method in Stripe
+    const stripePaymentMethod = await stripe.paymentMethods.create({
+      type: "card",
+      card: {
+        number: card_no,
+        // Add other card details here
+      },
+    });
+
+    // Create payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalAmount,
+      currency: currency,
+      payment_method: stripePaymentMethod.id,
+      customer: stripeCustomer.id,
+      description: `Order ID: ${order._id}`,
+    });
+
+    // Confirm payment intent
+    const paymentIntentConfirmation = await stripe.paymentIntents.confirm(
+      paymentIntent.id,
+      { return_url: 'https://example.com/payment_success' }
+    );
+
+    // Update order status
+    const paymentStatus = await OrderModel.findByIdAndUpdate(
+      { _id: order._id },
+      { payment: true }
+    );
+
+    return res.status(200).json({
+      message: "Order placed successfully and payment completed!",
+      order: paymentStatus,
+    });
   } catch (err) {
-    return res.status(500).send({ error: err.message });
+    console.error("Error creating order:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -189,4 +152,4 @@ const Payment_Refund_stripe =async (req,res)=>{
 
 
 
-module.exports = { CreateOrder, OrderDeleteAll,Payment_get_stripe,Payment_Refund_stripe };
+module.exports = { createOrder, OrderDeleteAll,Payment_get_stripe,Payment_Refund_stripe };
