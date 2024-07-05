@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server",
     "dev": "nodemon server",
-    "type": "module"
+    "type": "module",
+    "test": "npm test"
   },
   "author": "faseh",
   "license": "ISC",
